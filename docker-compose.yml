@@ -1,0 +1,36 @@
+services:
+  orderprocess:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://mongodb:27017/OrderDB
+      - RabbitMQ__HostName=rabbitmq
+    networks:
+      - mynetwork
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    command: mongod --bind_ip_all
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
